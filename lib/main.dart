@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -29,72 +31,52 @@ class MyHomePage extends StatefulWidget {
 }
 
 class MyHomePageState extends State<MyHomePage> {
-  int counter = 0;
+  late MyHomePageLogic myHomePageLogic;
 
-  void incrementCounter() {
-    setState(() {
-      counter++;
-    });
-  }
-
-  void rebuild() {
-    setState(() {});
+  @override
+  void initState() {
+    super.initState();
+    myHomePageLogic = MyHomePageLogic();
   }
 
   @override
   Widget build(BuildContext context) {
     print('MyHomePage build');
-    return MyHomePageInheritedWidget(
-      data: this,
-      counter: counter,
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text(widget.title),
-        ),
-        body: const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              WidgetA(),
-              WidgetB(),
-              WidgetC(),
-            ],
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(widget.title),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const WidgetA(),
+            WidgetB(myHomePageLogic),
+            WidgetC(myHomePageLogic),
+          ],
         ),
       ),
     );
   }
 }
 
-class MyHomePageInheritedWidget extends InheritedWidget {
-  const MyHomePageInheritedWidget({
-    Key? key,
-    required Widget child,
-    required this.data,
-    required this.counter,
-  }) : super(key: key, child: child);
-
-  final MyHomePageState data;
-  final int counter;
-
-  static MyHomePageState of(BuildContext context, {bool listen = true}) {
-    if (listen) {
-      return (context
-              .dependOnInheritedWidgetOfExactType<MyHomePageInheritedWidget>()!)
-          .data;
-    } else {
-      return (context
-              .getElementForInheritedWidgetOfExactType<
-                  MyHomePageInheritedWidget>()!
-              .widget as MyHomePageInheritedWidget)
-          .data;
-    }
+class MyHomePageLogic {
+  MyHomePageLogic() {
+    _counterController.sink.add(_counter);
   }
 
-  @override
-  bool updateShouldNotify(MyHomePageInheritedWidget oldWidget) {
-    return counter != oldWidget.counter; // カウンターの値が変わったら再描画
+  final StreamController<int> _counterController = StreamController<int>();
+  int _counter = 0;
+  Stream<int> get count => _counterController.stream;
+
+  void incrementCounter() {
+    _counter++;
+    _counterController.sink.add(_counter);
+  }
+
+  void dispose() {
+    _counterController.close();
   }
 }
 
@@ -109,43 +91,38 @@ class WidgetA extends StatelessWidget {
 }
 
 class WidgetB extends StatelessWidget {
-  const WidgetB({super.key});
+  const WidgetB(this.myHomePageLogic, {super.key});
+  final MyHomePageLogic myHomePageLogic;
 
   @override
   Widget build(BuildContext context) {
-    print('WidgetB build');
-    final MyHomePageState state = MyHomePageInheritedWidget.of(context);
-
-    return Text(
-      '${state.counter}',
-      style: Theme.of(context).textTheme.headlineMedium,
-    );
+    return StreamBuilder<int>(
+        stream: myHomePageLogic.count,
+        builder: (context, snapshot) {
+          print('WidgetB build');
+          return Text(
+            '${snapshot.data}',
+            style: Theme.of(context).textTheme.headlineMedium,
+          );
+        });
   }
 }
 
 class WidgetC extends StatelessWidget {
-  const WidgetC({super.key});
+  const WidgetC(this.myHomePageLogic, {super.key});
+  final MyHomePageLogic myHomePageLogic;
 
   @override
   Widget build(BuildContext context) {
     print('WidgetC build');
-    final MyHomePageState state =
-        MyHomePageInheritedWidget.of(context, listen: false); //falseにすると再描画されない
-
     return Column(
       children: [
         ElevatedButton(
           onPressed: () {
-            state.incrementCounter();
+            myHomePageLogic.incrementCounter();
           },
           child: const Text('カウント'),
         ),
-        ElevatedButton(
-          onPressed: () {
-            state.rebuild();
-          },
-          child: const Text('再描画'),
-        )
       ],
     );
   }

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_state_notifier/flutter_state_notifier.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:study_state/state/my_home_state.dart';
-import 'package:study_state/view_model/my_home_view_model.dart';
+import 'package:study_state/main.dart';
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
@@ -11,8 +9,7 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print('MyHomePage build');
-    return StateNotifierProvider<MyHomePageStateNotifier, MyHomePageState>(
-      create: (context) => MyHomePageStateNotifier(),
+    return ProviderScope(
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -43,14 +40,14 @@ class WidgetA extends StatelessWidget {
   }
 }
 
-class WidgetB extends StatelessWidget {
+class WidgetB extends ConsumerWidget {
   const WidgetB({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     print('WidgetB build');
     final int counter =
-        context.watch<MyHomePageState>().counter; //StateNotifierの場合はwatchでもOK
+        ref.watch(myHomePageProvider).counter; //context => refに変更
     // final int counter = context.select<MyHomePageState, int>(
     //     (state) => state.counter); //selectは値が変更されたときだけ再描画
     return Text(
@@ -60,15 +57,17 @@ class WidgetB extends StatelessWidget {
   }
 }
 
-class WidgetC extends StatelessWidget {
+class WidgetC extends ConsumerWidget {
   const WidgetC({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     print('WidgetC build');
-    final Function increment = context
-        .read<MyHomePageStateNotifier>()
+    final Function increment = ref
+        .read(myHomePageProvider.notifier)
         .increment; //readは値を取得するだけ.変更を監視しない
+    final Function rebuild =
+        ref.read(myHomePageProvider.notifier).rebuild;
 
     return Column(
       children: [
@@ -80,7 +79,7 @@ class WidgetC extends StatelessWidget {
         ),
         ElevatedButton(
           onPressed: () {
-            context.read<MyHomePageStateNotifier>().rebuild(); //再描画すると０に戻る
+            rebuild(); //再描画すると０に戻る
           },
           child: const Text('再描画'),
         ),

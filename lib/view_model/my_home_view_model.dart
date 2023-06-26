@@ -1,6 +1,6 @@
-import 'package:state_notifier/state_notifier.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../state/my_home_state.dart';
+import 'package:study_state/state/my_home_state.dart';
 
 class MyHomePageStateNotifier extends StateNotifier<MyHomePageState> {
   MyHomePageStateNotifier() : super(const MyHomePageState()); //初期値を設定

@@ -34,7 +34,13 @@ class WidgetA extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print('WidgetA build');
-    return const Text('犬の画像を表示するアプリです。');
+    return const Text(
+      '犬の画像を表示するアプリです。',
+      style: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+      ),
+    );
   }
 }
 
@@ -66,13 +72,13 @@ class WidgetC extends ConsumerWidget {
 
     return Column(
       children: [
-        ElevatedButton(
+        FilledButton(
           onPressed: () {
             increment();
           },
           child: const Text('ランダムに画像を表示'),
         ),
-        ElevatedButton(
+        FilledButton(
           onPressed: () {
             rebuild(); //再描画すると０に戻る
           },

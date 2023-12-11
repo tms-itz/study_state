@@ -54,8 +54,8 @@ class WidgetB extends ConsumerWidget {
         ref.watch(myHomePageProvider).counter; //context => refに変更
     // final int counter = context.select<MyHomePageState, int>(
     //     (state) => state.counter); //selectは値が変更されたときだけ再描画
-    return Image.network(
-        'https://images.dog.ceo/breeds/schnauzer-miniature/n02097047_3534.jpg');
+    final String dogImage = ref.watch(dogImageProvider);
+    return Image.network(dogImage);
   }
 }
 

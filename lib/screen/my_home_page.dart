@@ -12,7 +12,7 @@ class MyHomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Flutter Demo Home Page'),
+        title: const Text('Dog Photo'),
       ),
       body: const Center(
         child: Column(
@@ -34,7 +34,7 @@ class WidgetA extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print('WidgetA build');
-    return const Text('You have pushed the button this many times:');
+    return const Text('犬の画像を表示するアプリです。');
   }
 }
 
@@ -48,10 +48,8 @@ class WidgetB extends ConsumerWidget {
         ref.watch(myHomePageProvider).counter; //context => refに変更
     // final int counter = context.select<MyHomePageState, int>(
     //     (state) => state.counter); //selectは値が変更されたときだけ再描画
-    return Text(
-      '$counter',
-      style: Theme.of(context).textTheme.headlineMedium,
-    );
+    return Image.network(
+        'https://images.dog.ceo/breeds/schnauzer-miniature/n02097047_3534.jpg');
   }
 }
 
@@ -72,13 +70,13 @@ class WidgetC extends ConsumerWidget {
           onPressed: () {
             increment();
           },
-          child: const Text('カウント'),
+          child: const Text('ランダムに画像を表示'),
         ),
         ElevatedButton(
           onPressed: () {
             rebuild(); //再描画すると０に戻る
           },
-          child: const Text('再描画'),
+          child: const Text('更新'),
         ),
       ],
     );

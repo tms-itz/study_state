@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:study_state/main.dart';
+import 'package:study_state/model/provider.dart';
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
@@ -9,21 +9,19 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print('MyHomePage build');
-    return ProviderScope(
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: const Text('Flutter Demo Home Page'),
-        ),
-        body: const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              WidgetA(),
-              WidgetB(),
-              WidgetC(),
-            ],
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text('Flutter Demo Home Page'),
+      ),
+      body: const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            WidgetA(),
+            WidgetB(),
+            WidgetC(),
+          ],
         ),
       ),
     );
@@ -66,8 +64,7 @@ class WidgetC extends ConsumerWidget {
     final Function increment = ref
         .read(myHomePageProvider.notifier)
         .increment; //readは値を取得するだけ.変更を監視しない
-    final Function rebuild =
-        ref.read(myHomePageProvider.notifier).rebuild;
+    final Function rebuild = ref.read(myHomePageProvider.notifier).rebuild;
 
     return Column(
       children: [
